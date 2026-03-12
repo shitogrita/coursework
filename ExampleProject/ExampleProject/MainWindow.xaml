@@ -1,0 +1,381 @@
+﻿<Window x:Class="CryptoExchangeClient.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="CryptoExchangeClient"
+        Height="780"
+        Width="1250"
+        WindowStartupLocation="CenterScreen">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0" LastChildFill="False" Margin="5">
+            <TextBlock x:Name="CurrentUserTextBlock"
+                   FontSize="16"
+                   FontWeight="Bold"
+                   VerticalAlignment="Center"
+                   DockPanel.Dock="Left"
+                   Margin="0,0,20,0"/>
+
+            <Button x:Name="LogoutButton"
+                Content="Выйти"
+                Width="120"
+                Height="32"
+                DockPanel.Dock="Right"
+                Click="LogoutButton_Click"/>
+        </DockPanel>
+
+        <TabControl Grid.Row="1" Margin="0,10,0,0">
+
+            <!-- Активы -->
+            <TabItem Header="Активы">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <DataGrid x:Name="AssetsDataGrid"
+                              Grid.Row="0"
+                              AutoGenerateColumns="True"
+                              IsReadOnly="True"
+                              SelectionChanged="AssetsDataGrid_SelectionChanged"/>
+
+                    <StackPanel Grid.Row="1" Margin="0,10,0,0">
+                        <WrapPanel Margin="0,0,0,10">
+                            <TextBlock Text="ID" Width="40" VerticalAlignment="Center"/>
+                            <TextBox x:Name="AssetIdTextBox" Width="80" Margin="0,0,10,0" IsReadOnly="True"/>
+                            <TextBlock Text="Код" Width="40" VerticalAlignment="Center"/>
+                            <TextBox x:Name="AssetCodeTextBox" Width="140" Margin="0,0,10,0"/>
+                            <TextBlock Text="Название" Width="80" VerticalAlignment="Center"/>
+                            <TextBox x:Name="AssetNameTextBox" Width="220"/>
+                        </WrapPanel>
+
+                        <WrapPanel>
+                            <Button Content="Загрузить" Width="120" Margin="0,0,10,0" Click="LoadAssetsButton_Click"/>
+                            <Button x:Name="AddAssetButton" Content="Добавить" Width="120" Margin="0,0,10,0" Click="AddAssetButton_Click"/>
+                            <Button x:Name="UpdateAssetButton" Content="Изменить" Width="120" Margin="0,0,10,0" Click="UpdateAssetButton_Click"/>
+                            <Button x:Name="DeleteAssetButton" Content="Удалить" Width="120" Click="DeleteAssetButton_Click"/>
+                        </WrapPanel>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+            <!-- Торговые пары -->
+            <TabItem Header="Торговые пары">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <DataGrid x:Name="PairsDataGrid"
+                              Grid.Row="0"
+                              AutoGenerateColumns="True"
+                              IsReadOnly="True"
+                              SelectionChanged="PairsDataGrid_SelectionChanged"/>
+
+                    <StackPanel Grid.Row="1" Margin="0,10,0,0">
+                        <WrapPanel Margin="0,0,0,10">
+                            <TextBlock Text="ID" Width="40" VerticalAlignment="Center"/>
+                            <TextBox x:Name="PairIdTextBox" Width="80" Margin="0,0,10,0" IsReadOnly="True"/>
+
+                            <TextBlock Text="Символ" Width="60" VerticalAlignment="Center"/>
+                            <TextBox x:Name="PairSymbolTextBox" Width="150" Margin="0,0,10,0"/>
+
+                            <TextBlock Text="Base" Width="40" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="PairBaseComboBox" Width="180" Margin="0,0,10,0"
+                                      DisplayMemberPath="display_name" SelectedValuePath="id"/>
+
+                            <TextBlock Text="Quote" Width="45" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="PairQuoteComboBox" Width="180"
+                                      DisplayMemberPath="display_name" SelectedValuePath="id"/>
+                        </WrapPanel>
+
+                        <WrapPanel>
+                            <Button Content="Загрузить" Width="120" Margin="0,0,10,0" Click="LoadPairsButton_Click"/>
+                            <Button x:Name="AddPairButton" Content="Добавить" Width="120" Margin="0,0,10,0" Click="AddPairButton_Click"/>
+                            <Button x:Name="UpdatePairButton" Content="Изменить" Width="120" Margin="0,0,10,0" Click="UpdatePairButton_Click"/>
+                            <Button x:Name="DeletePairButton" Content="Удалить" Width="120" Click="DeletePairButton_Click"/>
+                        </WrapPanel>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+            <!-- Кошельки -->
+            <TabItem Header="Кошельки">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <DataGrid x:Name="WalletsDataGrid"
+                              Grid.Row="0"
+                              AutoGenerateColumns="True"
+                              IsReadOnly="True"
+                              SelectionChanged="WalletsDataGrid_SelectionChanged"/>
+
+                    <StackPanel Grid.Row="1" Margin="0,10,0,0">
+                        <WrapPanel Margin="0,0,0,10">
+                            <TextBlock Text="ID" Width="40" VerticalAlignment="Center"/>
+                            <TextBox x:Name="WalletIdTextBox" Width="80" Margin="0,0,10,0" IsReadOnly="True"/>
+
+                            <TextBlock Text="Пользователь" Width="90" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="WalletUserComboBox" Width="220" Margin="0,0,10,0"
+                                      DisplayMemberPath="email" SelectedValuePath="id"/>
+
+                            <TextBlock Text="Актив" Width="50" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="WalletAssetComboBox" Width="180" Margin="0,0,10,0"
+                                      DisplayMemberPath="display_name" SelectedValuePath="id"/>
+
+                            <TextBlock Text="Доступно" Width="70" VerticalAlignment="Center"/>
+                            <TextBox x:Name="WalletAvailableTextBox" Width="120" Margin="0,0,10,0"/>
+
+                            <TextBlock Text="Заблокировано" Width="100" VerticalAlignment="Center"/>
+                            <TextBox x:Name="WalletLockedTextBox" Width="120"/>
+                        </WrapPanel>
+
+                        <WrapPanel>
+                            <Button Content="Загрузить" Width="120" Margin="0,0,10,0" Click="LoadWalletsButton_Click"/>
+                            <Button x:Name="AddWalletButton" Content="Добавить" Width="120" Margin="0,0,10,0" Click="AddWalletButton_Click"/>
+                            <Button x:Name="UpdateWalletButton" Content="Изменить" Width="120" Margin="0,0,10,0" Click="UpdateWalletButton_Click"/>
+                            <Button x:Name="DeleteWalletButton" Content="Удалить" Width="120" Click="DeleteWalletButton_Click"/>
+                        </WrapPanel>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+            <!-- Ордера -->
+            <TabItem Header="Ордера">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <DataGrid x:Name="OrdersDataGrid"
+                              Grid.Row="0"
+                              AutoGenerateColumns="True"
+                              IsReadOnly="True"
+                              SelectionChanged="OrdersDataGrid_SelectionChanged"/>
+
+                    <StackPanel Grid.Row="1" Margin="0,10,0,0">
+                        <WrapPanel Margin="0,0,0,10">
+                            <TextBlock Text="ID" Width="40" VerticalAlignment="Center"/>
+                            <TextBox x:Name="OrderIdTextBox" Width="80" Margin="0,0,10,0" IsReadOnly="True"/>
+
+                            <TextBlock Text="Пользователь" Width="90" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="OrderUserComboBox" Width="220" Margin="0,0,10,0"
+                                      DisplayMemberPath="email" SelectedValuePath="id"/>
+
+                            <TextBlock Text="Пара" Width="40" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="OrderPairComboBox" Width="140" Margin="0,0,10,0"
+                                      DisplayMemberPath="symbol" SelectedValuePath="id"/>
+
+                            <TextBlock Text="Side" Width="35" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="OrderSideComboBox" Width="100" Margin="0,0,10,0">
+                                <ComboBoxItem Content="buy"/>
+                                <ComboBoxItem Content="sell"/>
+                            </ComboBox>
+
+                            <TextBlock Text="Цена" Width="40" VerticalAlignment="Center"/>
+                            <TextBox x:Name="OrderPriceTextBox" Width="110" Margin="0,0,10,0"/>
+
+                            <TextBlock Text="Количество" Width="80" VerticalAlignment="Center"/>
+                            <TextBox x:Name="OrderQuantityTextBox" Width="110" Margin="0,0,10,0"/>
+
+                            <TextBlock Text="Статус" Width="50" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="OrderStatusComboBox" Width="120">
+                                <ComboBoxItem Content="new"/>
+                                <ComboBoxItem Content="filled"/>
+                                <ComboBoxItem Content="canceled"/>
+                            </ComboBox>
+                        </WrapPanel>
+
+                        <WrapPanel>
+                            <Button Content="Загрузить" Width="120" Margin="0,0,10,0" Click="LoadOrdersButton_Click"/>
+                            <Button Content="Добавить" Width="120" Margin="0,0,10,0" Click="AddOrderButton_Click"/>
+                            <Button Content="Изменить" Width="120" Margin="0,0,10,0" Click="UpdateOrderButton_Click"/>
+                            <Button Content="Удалить" Width="120" Click="DeleteOrderButton_Click"/>
+                        </WrapPanel>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+            <!-- Пополнения -->
+            <TabItem Header="Пополнения">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <DataGrid x:Name="DepositsDataGrid"
+                              Grid.Row="0"
+                              AutoGenerateColumns="True"
+                              IsReadOnly="True"
+                              SelectionChanged="DepositsDataGrid_SelectionChanged"/>
+
+                    <StackPanel Grid.Row="1" Margin="0,10,0,0">
+                        <WrapPanel Margin="0,0,0,10">
+                            <TextBlock Text="ID" Width="40" VerticalAlignment="Center"/>
+                            <TextBox x:Name="DepositIdTextBox" Width="80" Margin="0,0,10,0" IsReadOnly="True"/>
+
+                            <TextBlock Text="Пользователь" Width="90" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="DepositUserComboBox" Width="220" Margin="0,0,10,0"
+                                      DisplayMemberPath="email" SelectedValuePath="id"/>
+
+                            <TextBlock Text="Актив" Width="50" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="DepositAssetComboBox" Width="180" Margin="0,0,10,0"
+                                      DisplayMemberPath="display_name" SelectedValuePath="id"/>
+
+                            <TextBlock Text="Сумма" Width="50" VerticalAlignment="Center"/>
+                            <TextBox x:Name="DepositAmountTextBox" Width="120" Margin="0,0,10,0"/>
+
+                            <TextBlock Text="Хэш транзакции" Width="110" VerticalAlignment="Center"/>
+                            <TextBox x:Name="DepositTxHashTextBox" Width="220" Margin="0,0,10,0"/>
+
+                            <TextBlock Text="Статус" Width="50" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="DepositStatusComboBox" Width="120">
+                                <ComboBoxItem Content="pending"/>
+                                <ComboBoxItem Content="confirmed"/>
+                                <ComboBoxItem Content="rejected"/>
+                            </ComboBox>
+                        </WrapPanel>
+
+                        <WrapPanel>
+                            <Button Content="Загрузить" Width="120" Margin="0,0,10,0" Click="LoadDepositsButton_Click"/>
+                            <Button Content="Добавить" Width="120" Margin="0,0,10,0" Click="AddDepositButton_Click"/>
+                            <Button Content="Изменить" Width="120" Margin="0,0,10,0" Click="UpdateDepositButton_Click"/>
+                            <Button Content="Удалить" Width="120" Click="DeleteDepositButton_Click"/>
+                        </WrapPanel>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+            <!-- Выводы -->
+            <TabItem Header="Выводы">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <DataGrid x:Name="WithdrawalsDataGrid"
+                              Grid.Row="0"
+                              AutoGenerateColumns="True"
+                              IsReadOnly="True"
+                              SelectionChanged="WithdrawalsDataGrid_SelectionChanged"/>
+
+                    <StackPanel Grid.Row="1" Margin="0,10,0,0">
+                        <WrapPanel Margin="0,0,0,10">
+                            <TextBlock Text="ID" Width="40" VerticalAlignment="Center"/>
+                            <TextBox x:Name="WithdrawalIdTextBox" Width="80" Margin="0,0,10,0" IsReadOnly="True"/>
+
+                            <TextBlock Text="Пользователь" Width="90" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="WithdrawalUserComboBox" Width="220" Margin="0,0,10,0"
+                                      DisplayMemberPath="email" SelectedValuePath="id"/>
+
+                            <TextBlock Text="Актив" Width="50" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="WithdrawalAssetComboBox" Width="180" Margin="0,0,10,0"
+                                      DisplayMemberPath="display_name" SelectedValuePath="id"/>
+
+                            <TextBlock Text="Сумма" Width="50" VerticalAlignment="Center"/>
+                            <TextBox x:Name="WithdrawalAmountTextBox" Width="120" Margin="0,0,10,0"/>
+
+                            <TextBlock Text="Адрес" Width="50" VerticalAlignment="Center"/>
+                            <TextBox x:Name="WithdrawalAddressTextBox" Width="190" Margin="0,0,10,0"/>
+
+                            <TextBlock Text="Комиссия" Width="70" VerticalAlignment="Center"/>
+                            <TextBox x:Name="WithdrawalFeeTextBox" Width="100" Margin="0,0,10,0"/>
+
+                            <TextBlock Text="Статус" Width="50" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="WithdrawalStatusComboBox" Width="120">
+                                <ComboBoxItem Content="requested"/>
+                                <ComboBoxItem Content="approved"/>
+                                <ComboBoxItem Content="sent"/>
+                                <ComboBoxItem Content="failed"/>
+                                <ComboBoxItem Content="canceled"/>
+                            </ComboBox>
+                        </WrapPanel>
+
+                        <WrapPanel>
+                            <Button Content="Загрузить" Width="120" Margin="0,0,10,0" Click="LoadWithdrawalsButton_Click"/>
+                            <Button Content="Добавить" Width="120" Margin="0,0,10,0" Click="AddWithdrawalButton_Click"/>
+                            <Button Content="Изменить" Width="120" Margin="0,0,10,0" Click="UpdateWithdrawalButton_Click"/>
+                            <Button Content="Удалить" Width="120" Click="DeleteWithdrawalButton_Click"/>
+                        </WrapPanel>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="История кошелька">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <WrapPanel Grid.Row="0" Margin="0,0,0,10">
+                        <TextBlock Text="Пользователь" Width="90" VerticalAlignment="Center"/>
+                        <ComboBox x:Name="WalletHistoryUserComboBox"
+                      Width="220"
+                      Margin="0,0,10,0"
+                      DisplayMemberPath="email"
+                      SelectedValuePath="id"/>
+
+                        <TextBlock Text="Актив" Width="50" VerticalAlignment="Center"/>
+                        <ComboBox x:Name="WalletHistoryAssetComboBox"
+                      Width="180"
+                      Margin="0,0,10,0"
+                      DisplayMemberPath="display_name"
+                      SelectedValuePath="id"/>
+
+                        <Button x:Name="LoadWalletHistoryButton"
+                    Content="Загрузить историю"
+                    Width="150"
+                    Margin="0,0,10,0"
+                    Click="LoadWalletHistoryButton_Click"/>
+
+                        <Button x:Name="ClearWalletHistoryFilterButton"
+                    Content="Сбросить фильтр"
+                    Width="140"
+                    Click="ClearWalletHistoryFilterButton_Click"/>
+                    </WrapPanel>
+
+                    <DataGrid x:Name="WalletTransactionsDataGrid"
+                  Grid.Row="1"
+                  AutoGenerateColumns="True"
+                  IsReadOnly="True"/>
+                </Grid>
+            </TabItem>
+
+            <!-- Отчеты -->
+            <TabItem Header="Отчёты">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <WrapPanel Grid.Row="0" Margin="0,0,0,10">
+                        <Button Content="Балансы пользователей" Width="180" Margin="0,0,10,0" Click="ReportWalletBalances_Click"/>
+                        <Button Content="Активные ордера" Width="150" Margin="0,0,10,0" Click="ReportActiveOrders_Click"/>
+                        <Button Content="История пополнений" Width="160" Margin="0,0,10,0" Click="ReportDeposits_Click"/>
+                        <Button Content="История выводов" Width="150" Margin="0,0,10,0" Click="ReportWithdrawals_Click"/>
+                        <Button Content="История сделок" Width="140" Click="ReportTrades_Click"/>
+                    </WrapPanel>
+
+                    <DataGrid x:Name="ReportsDataGrid"
+                              Grid.Row="1"
+                              AutoGenerateColumns="True"
+                              IsReadOnly="True"/>
+                </Grid>
+            </TabItem>
+
+        </TabControl>
+    </Grid>
+</Window>
